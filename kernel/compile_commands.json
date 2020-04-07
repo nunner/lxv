@@ -1,0 +1,27 @@
+[
+ {
+  "directory": "/home/nun/Programming/git/osdev-riscv/kernel",
+  "arguments": [
+   "riscv64-unknown-elf-gcc",
+   "-I",
+   "include",
+   "-I",
+   "include/libc",
+   "-std=gnu99",
+   "-ffreestanding",
+   "-Wall",
+   "-Wextra",
+   "-g",
+   "-nostartfiles",
+   "-nostdlib",
+   "-nodefaultlibs",
+   "./src/start.S",
+   "./src/kernel.c",
+   "-T",
+   "link.ld",
+   "-o",
+   "../img.elf"
+  ],
+  "file": "./src/kernel.c"
+ }
+]

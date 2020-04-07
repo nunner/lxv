@@ -1,0 +1,11 @@
+// Boot images
+*.elf
+
+// Build files
+*.o
+*.out
+bootloader
+
+// CLion config
+.idea/
+CMakeLists.txt
