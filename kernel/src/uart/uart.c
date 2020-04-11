@@ -11,19 +11,13 @@ setup_uart()
 {
 	control = (uint8_t *) &__uart;
 
-	char val;	
 	// Set transmission length to 8 bits
-	val = 0b11;
-	// Set line control register
-	control[3] = val;
+	control[3] = 0b11;
 	
 	// Enable FIFO mode
-	val = 0b1;
-	control[2] = val;
+	control[2] = 0b1;
 
-	val = 0b1111;
-	control[1] = val;
-
+	control[1] = 0b1;
 }
 
 void 
@@ -46,5 +40,5 @@ uart_cread()
 	if((control[5] & 0b1) != 0)
 		return control[0];
 	else
-		return -1;
+		return 0;
 }

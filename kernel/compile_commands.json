@@ -15,13 +15,26 @@
    "-nostartfiles",
    "-nostdlib",
    "-nodefaultlibs",
+   "-mcmodel=medany",
+   "./src/cpu/machine/interrupt.S",
    "./src/start.S",
+   "./src/cpu/machine/interrupts.c",
+   "./src/cpu/machine/plic.c",
    "./src/kernel.c",
+   "./src/uart/uart.c",
+   "./src/libc/string/strncmp.c",
+   "./src/libc/string/strcat.c",
+   "./src/libc/string/memcpy.c",
+   "./src/libc/string/memset.c",
+   "./src/libc/string/strrev.c",
+   "./src/libc/string/strlen.c",
+   "./src/libc/string/strcmp.c",
+   "./src/libc/stdlib/itoa.c",
    "-T",
    "link.ld",
    "-o",
    "../img.elf"
   ],
-  "file": "./src/kernel.c"
+  "file": "./src/libc/stdlib/itoa.c"
  }
 ]
