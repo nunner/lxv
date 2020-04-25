@@ -9,7 +9,18 @@ INCLUDE=include
 LIBC=$(INCLUDE)/libc
 
 # https://forums.sifive.com/t/relocation-truncated-to-fit-r-riscv-hi20/2430
-CFLAGS+= -I $(INCLUDE) -I $(LIBC) -std=gnu99 -ffreestanding -Wall -Wextra -g -nostartfiles -nostdlib -nodefaultlibs -mcmodel=medany
+CFLAGS+= -I $(INCLUDE) \
+		 -I $(LIBC) \
+		 -std=gnu99 \
+		 -ffreestanding \
+		 -Wall \
+		 -Wextra \
+		 -g \
+		 -nostartfiles \
+		 -nostdlib \
+		 -nodefaultlibs \
+		 -mcmodel=medany \
+		 -Wno-int-to-void-pointer-cast
 
 all: build
 

@@ -6,9 +6,10 @@ QEMU=qemu-system-riscv64 \
 	 -serial stdio \
 	 -nographic \
 	 -monitor tcp::1234,server,nowait \
-	 -d cpu_reset \
 	 -bios none \
 	 -kernel $(KERNEL)
+
+#  -d cpu_reset \
 
 all: clean kernel
 

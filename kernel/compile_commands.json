@@ -1,6 +1,6 @@
 [
  {
-  "directory": "/home/nun/Programming/git/osdev-riscv/kernel",
+  "directory": "/home/nun/Programming/git/lxv/kernel",
   "arguments": [
    "riscv64-unknown-elf-gcc",
    "-I",
@@ -16,9 +16,12 @@
    "-nostdlib",
    "-nodefaultlibs",
    "-mcmodel=medany",
-   "./src/cpu/machine/interrupt.S",
+   "-Wno-int-to-void-pointer-cast",
    "./src/start.S",
-   "./src/cpu/machine/interrupts.c",
+   "./src/memory/paging.c",
+   "./src/memory/kheap.c",
+   "./src/cpu/cpu.c",
+   "./src/cpu/machine/interrupt.c",
    "./src/cpu/machine/plic.c",
    "./src/kernel.c",
    "./src/uart/uart.c",

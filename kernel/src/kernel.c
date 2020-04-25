@@ -3,8 +3,6 @@
 #include "cpu/cpu.h"
 #include "driver/uart.h"
 
-#include "memory/frame.h"
-
 void 
 main()
 {
