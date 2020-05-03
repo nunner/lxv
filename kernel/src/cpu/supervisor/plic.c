@@ -1,4 +1,4 @@
-#include "cpu/machine/plic.h"
+#include "cpu/supervisor/plic.h"
 #include "cpu/cpu.h"
 #include "cpu/asm.h"
 

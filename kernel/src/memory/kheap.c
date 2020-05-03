@@ -1,4 +1,4 @@
-#include "memory/kheap.h"
+#include "memory/kmalloc.h"
 #include "memory/paging.h"
 
 #include "stdint.h"
@@ -12,7 +12,7 @@ void *
 kmalloc_int(size_t size, bool align)
 {
 	if(align) 
-		placement_addr = (placement_addr & ~(PAGE_SIZE)) + PAGE_SIZE;
+		placement_addr = (placement_addr & ~(0x1FFF)) + PAGE_SIZE;
 	void *ptr = (void *) placement_addr;
 	placement_addr += size;
 	return ptr;

@@ -4,12 +4,12 @@ KERNEL=img.elf
 QEMU=qemu-system-riscv64 \
 	 -machine virt \
 	 -serial stdio \
-	 -nographic \
+ 	 -nographic \
 	 -monitor tcp::1234,server,nowait \
 	 -bios none \
 	 -kernel $(KERNEL)
 
-#  -d cpu_reset \
+# -d cpu_reset \
 
 all: clean kernel
 
@@ -18,10 +18,10 @@ all: clean kernel
 kernel:
 	make -C kernel
 
-qemu: all
+run: all
 	$(QEMU)
 
-qemu-debug: all
+debug: all
 	$(QEMU) -S -gdb tcp::26000
 
 clean:

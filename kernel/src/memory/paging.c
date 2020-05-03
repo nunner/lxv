@@ -1,21 +1,26 @@
 #include "memory/paging.h"
-#include "memory/kheap.h"
+#include "memory/kmalloc.h"
 #include "cpu/asm.h"
 
 #include "stdint.h"
 #include "stdbool.h"
 #include "string.h"
 
+#include "driver/uart.h"
+
 #define INDEX(x) (x/64)
 #define OFFSET(x) (x%64)
 
-#define VPN(va, lvl) ((va & (0x1FF << POFFSET(lvl))) >> POFFSET(lvl))
+#define VPN(va, lvl) (((va) >> POFFSET(lvl)) & 0x1FF)
 #define POFFSET(lvl) (12 + 9*lvl)
 
-#define PA(page) ((uint64_t) page.ppn << 12)
+#define PA(page) ((uint64_t) page->ppn << 12)
 
 extern volatile void __heap_start;
 extern volatile void __heap_end;
+extern volatile void __uart;
+extern volatile void __kernel_start;
+extern volatile void __kernel_end;
 
 uint64_t placement_addr;
 
@@ -56,25 +61,25 @@ find_free()
 pte_t *
 find(pt_t *pagetable, uint64_t va, bool create)
 {
-	pte_t page;
+	pte_t *page;
+	pt_t  *current = pagetable;
 
 	for(int i = 2; i > 0; i--) {
-		page = pagetable->pages[VPN(va, i)];
+		page = &current->pages[VPN(va, i)];
 
-		if(!page.v) {
+		if(page == 0 || !(page->flags & PTE_V)) {
 			if(!create) return 0;
 
 			pt_t *table = (pt_t *) kmalloc_a(sizeof(pt_t));
 			memset(table, 0, sizeof(pt_t)); 
-
-			page.ppn = (uint64_t) table >> 12;
-			page.v = 1;
+			page->ppn = (uint64_t) table >> 12;
+			page->flags |= PTE_V;
 		}
 
-		pagetable = (pt_t *) PA(page);
+		current = (pt_t *) PA(page);
 	}
 
-	return &pagetable->pages[VPN(va, 0)];
+	return &current->pages[VPN(va, 0)];
 }
 
 void
@@ -84,12 +89,9 @@ map_range(pt_t *pagetable, uint64_t vaddr, uint64_t paddr, uint64_t size, uint64
 	{
 		uint64_t pos = vaddr + i;
 		pte_t *page = find(pagetable, pos, TRUE);
-
-		// TODO: set flags
-		(void) flags;
-
+		page->flags = flags;
 		page->ppn = (uint64_t) ((paddr + i) >> 12);
-		page->v = 1;
+		page->flags |= PTE_V;
 	}
 }
 
@@ -105,9 +107,9 @@ init_paging()
 	root_table = (pt_t *) kmalloc_a(sizeof(pt_t));
 	memset(root_table, 0, sizeof(pt_t));
 
-	map_range(root_table, (uint64_t) &__heap_start, (uint64_t) &__heap_start, placement_addr - (uint64_t) &__heap_start, 0);
+	map_range(root_table, (uint64_t) &__kernel_start, (uint64_t) &__kernel_start,  (uint64_t ) &__kernel_end - (uint64_t) &__kernel_start, PTE_W | PTE_R);
+	 map_range(root_table, (uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
+	map_range(root_table, (uint64_t) &__heap_start, (uint64_t) &__heap_start, (uint64_t) &__heap_end - (uint64_t) &__heap_start, PTE_W | PTE_R);
 
 	csr_set(satp, (uint64_t) root_table >> 12);
-	// Set Sv39 mode
-	csr_set(satp, (uint64_t) 8 << 60);
 }

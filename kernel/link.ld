@@ -4,6 +4,7 @@ ENTRY(_start)
 SECTIONS {
 	. = 0x80000000;
 	__memory_start = .;
+	__kernel_start = .;
 	PROVIDE(__load_addr = .);
 
 	.text : {
@@ -31,7 +32,8 @@ SECTIONS {
 		PROVIDE(__stack_top = .);
 		__bss = .;
 	}
+	__kernel_end = .;
 
 	PROVIDE(__heap_start = ALIGN(4K));
-	PROVIDE(__heap_end = __memory_start + 128M);
+	PROVIDE(__heap_end = __memory_start + 1M);
 }
