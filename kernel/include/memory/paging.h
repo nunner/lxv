@@ -26,3 +26,18 @@ typedef struct __attribute__((packed))
 {
 	pte_t pages[512];
 } pt_t;
+
+#define PAGE_SIZE 0x1000
+#define PAGE_MASK 0x1FFF
+
+void
+init_paging();
+
+void
+map_range(uint64_t vaddr, uint64_t paddr, uint64_t size, uint64_t flags);
+
+void
+map_range_table(pt_t *pagetable, uint64_t vaddr, uint64_t paddr, uint64_t size, uint64_t flags);
+
+void
+map_page(uint64_t vaddr, uint64_t flags);

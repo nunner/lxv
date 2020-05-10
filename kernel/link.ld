@@ -35,5 +35,4 @@ SECTIONS {
 	__kernel_end = .;
 
 	PROVIDE(__heap_start = ALIGN(4K));
-	PROVIDE(__heap_end = __memory_start + 1M);
 }

@@ -26,3 +26,6 @@ debug: all
 
 clean:
 	rm -f *.elf
+
+todo: 
+	rg "TODO" > TODO

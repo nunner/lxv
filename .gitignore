@@ -5,6 +5,7 @@
 *.o
 *.out
 bootloader
+TODO
 
 // CLion config
 .idea/

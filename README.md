@@ -9,6 +9,7 @@ Then, to run it through qemu, just run
 make qemu
 ```
 
-# TODO
-- Implement page alignment in the heap allocator
-- Move end header when resizing heap
+# Stuff
+## Paging 
+TODO: write this.
+Paging is something that took me quite some time to figure out. 

@@ -9,12 +9,10 @@
 #define CODE ~(INTERRUPT)
 
 #define REGISTER_INTERRUPT(interrupt, handler) {\
-	csr_set(sie, 1<<interrupt); \
 	interrupts[interrupt] = handler; \
 }
 
 #define REGISTER_EXCEPTION(exception, handler) {\
-	csr_set(sie, 1<<exception); \
 	exceptions[exception] = handler; \
 }
 

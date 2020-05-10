@@ -7,8 +7,6 @@ _start:
 	la sp, __stack_top
 	la gp, __global_pointer	
 
-	call init_paging
-		
 	li t0, (0b1 << 11) | (0b1 << 5)
 	csrw mstatus, t0
 
