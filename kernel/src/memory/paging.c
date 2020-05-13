@@ -22,6 +22,7 @@
 extern volatile void __uart;
 extern volatile void __kernel_start;
 extern volatile void __kernel_end;
+extern volatile void __heap_start;
 
 static pte_t *placement;
 static uint64_t placement_addr;
@@ -138,7 +139,7 @@ switch_table(pt_t *table)
 
 void
 init_paging()
-{
+{ 
 	for(size_t i = (uint64_t) &__kernel_start; i < (uint64_t) &__kernel_end; i += PAGE_SIZE)
 		alloc_frame(i);
 
@@ -151,13 +152,12 @@ init_paging()
 	placement_addr = (uint64_t) kmalloc_a(sizeof(uint64_t));
 	placement = find(current_table, placement_addr, TRUE);
 
+	map_range((uint64_t) &__heap_start, (uint64_t) &__heap_start, HEAP_START_SIZE, PTE_W | PTE_R);
 	map_range((uint64_t) &__kernel_start, (uint64_t) &__kernel_start,  (uint64_t ) &__kernel_end - (uint64_t) &__kernel_start, PTE_W | PTE_R);
 	map_range((uint64_t) placement, (uint64_t) placement, PAGE_SIZE, PTE_W | PTE_R);
 	map_range((uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
 
-	setup_heap();
 	switch_table(root_table);
-	enabled = TRUE;	
 
-	map_range((uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
+	enabled = TRUE;	
 }

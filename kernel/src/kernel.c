@@ -9,16 +9,18 @@
 #include "memory/mmu.h"
 #include "memory/paging.h"
 
+#include "memory/palloc.h"
+
 void 
 main()
 {
 	// Setup the UART
 	setup_uart();
-	setup_heap();
 	enable_supervisor_interrupts();
 
 	// Enable Sv39 paging
 	init_paging();
+	setup_heap();
 
 	uart_write("Hello, world\n");
 

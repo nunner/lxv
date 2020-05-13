@@ -12,9 +12,5 @@ layout split
 target remote localhost:26000
 
 file img.elf
-b init_paging
+b main
 b handle_supervisor_trap
-
-b map_object if enabled 
-b find if enabled 
-b map_range if enabled 

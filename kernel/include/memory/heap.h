@@ -3,17 +3,16 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-struct {
+typedef struct node {
 	uint64_t size;
 	bool active;
-	struct heap_block *next;
-} node;
+	struct node *next;
+} node_t;
 
-typedef struct node node_t;
 
 typedef struct {
-	node_t *start;
-	node_t *end;
+	struct node *start;
+	struct node *end;
 	uint64_t size;
 } heap_t;
 
@@ -22,6 +21,3 @@ switch_heap(heap_t *heap);
 
 void *
 kmalloc(size_t size);
-
-void *
-kmalloc_a(size_t size);

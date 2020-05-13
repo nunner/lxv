@@ -3,10 +3,8 @@
 // General
 #define MEM_AVAIL 0x8000000 
 
-// Heap variables
-#define HEAP_MAX_SIZE 0xFFFFF 
+// Heap size at startup
+#define HEAP_START_SIZE 0x10000
 
 // Paging variables
 #define PAGE_FRAME_START 0x80000000
-
-
