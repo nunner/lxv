@@ -22,6 +22,10 @@ main()
 	init_paging();
 	setup_heap();
 
+
+	node_t *test = malloc(sizeof(node_t));
+	free(test);
+
 	uart_write("Hello, world\n");
 
 	while(1)

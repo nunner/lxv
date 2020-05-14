@@ -153,7 +153,7 @@ init_paging()
 	placement = find(current_table, placement_addr, TRUE);
 
 	map_range((uint64_t) &__heap_start, (uint64_t) &__heap_start, HEAP_START_SIZE, PTE_W | PTE_R);
-	map_range((uint64_t) &__kernel_start, (uint64_t) &__kernel_start,  (uint64_t ) &__kernel_end - (uint64_t) &__kernel_start, PTE_W | PTE_R);
+	map_range((uint64_t) &__kernel_start, (uint64_t) &__kernel_start,  (uint64_t ) &__kernel_end - (uint64_t) &__kernel_start, PTE_W | PTE_R | PTE_X);
 	map_range((uint64_t) placement, (uint64_t) placement, PAGE_SIZE, PTE_W | PTE_R);
 	map_range((uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
 

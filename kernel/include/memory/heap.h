@@ -20,4 +20,7 @@ void
 switch_heap(heap_t *heap);
 
 void *
-kmalloc(size_t size);
+malloc(size_t size);
+
+void
+free(void *);

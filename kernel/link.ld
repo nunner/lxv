@@ -28,7 +28,7 @@ SECTIONS {
 
 	.bss : {
 		_bss = .;
-		. += 64K;
+		. += 128K;
 		PROVIDE(__stack_top = .);
 		__bss = .;
 	}

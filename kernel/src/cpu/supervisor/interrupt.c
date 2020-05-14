@@ -59,6 +59,6 @@ void
 stub(uint64_t value)
 {
 	(void) value;
-	uart_write("Oida");
+	uart_write("Aaaaaaaaaaaaaaaaaaaaahh!!!\n");
 }
 
