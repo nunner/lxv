@@ -1,15 +1,10 @@
-#include "cpu/cpu.h"
-#include "cpu/asm.h"
+#include "os.h"
 
 #include "cpu/supervisor/interrupt.h"
-
 #include "driver/uart.h"
-
-#include "memory/heap.h"
 #include "memory/mmu.h"
 #include "memory/paging.h"
 
-#include "memory/palloc.h"
 
 void 
 main()
@@ -22,8 +17,7 @@ main()
 	init_paging();
 	setup_heap();
 
-
-	node_t *test = malloc(sizeof(node_t));
+	node_t *test = malloc(PAGE_SIZE);
 	free(test);
 
 	uart_write("Hello, world\n");

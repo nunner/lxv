@@ -23,9 +23,9 @@ extern volatile void __uart;
 extern volatile void __kernel_start;
 extern volatile void __kernel_end;
 extern volatile void __heap_start;
+extern volatile void __placement_addr;
 
 static pte_t *placement;
-static uint64_t placement_addr;
 static bool enabled;
 
 static pt_t *root_table;
@@ -62,7 +62,7 @@ find(pt_t *pagetable, uint64_t va, bool create)
 
 	if(enabled) {
 		map_object((uint64_t) pagetable);
-		current = (pt_t *) placement_addr;
+		current = (pt_t *) &__placement_addr;
 	}
 
 	// May god forgive me, for I have sinned.
@@ -87,7 +87,7 @@ find(pt_t *pagetable, uint64_t va, bool create)
 }
 
 void
-map_range(uint64_t vaddr, uint64_t paddr, uint64_t size, uint64_t flags)
+map_range_at(uint64_t vaddr, uint64_t paddr, uint64_t size, uint64_t flags)
 {
 	pte_t *page;
 
@@ -110,7 +110,7 @@ map_range(uint64_t vaddr, uint64_t paddr, uint64_t size, uint64_t flags)
 }
 
 void
-map_range_table(pt_t *pagetable, uint64_t vaddr, uint64_t paddr, uint64_t size, uint64_t flags)
+map_range_at_table(pt_t *pagetable, uint64_t vaddr, uint64_t paddr, uint64_t size, uint64_t flags)
 {
 	vaddr &= ~(0x1FFF);
 	for(size_t i = 0; i <= size; i += PAGE_SIZE)
@@ -122,6 +122,21 @@ map_range_table(pt_t *pagetable, uint64_t vaddr, uint64_t paddr, uint64_t size, 
 		page->ppn = (uint64_t) ((paddr + i) >> 12);
 		page->flags |= PTE_V;
 	}
+}
+
+void
+map_range(uint64_t vaddr, uint64_t size, uint64_t flags)
+{
+	for(size_t i = 0; i <= size; i += PAGE_SIZE)
+	{
+
+		uint64_t pos = vaddr + i;
+		uint64_t ptr = find_free();
+		map_range_at(pos, ptr, size, flags);
+	}
+
+	// To flush.
+	if(enabled) switch_table(current_table);
 }
 
 void
@@ -149,15 +164,13 @@ init_paging()
 	// Don't use switch_table yet because we don't want to invalidate the caches… I think
 	current_table = root_table;
 
-	placement_addr = (uint64_t) kmalloc_a(sizeof(uint64_t));
-	placement = find(current_table, placement_addr, TRUE);
+	placement = find(root_table, (uint64_t) &__placement_addr, TRUE);
 
-	map_range((uint64_t) &__heap_start, (uint64_t) &__heap_start, HEAP_START_SIZE, PTE_W | PTE_R);
-	map_range((uint64_t) &__kernel_start, (uint64_t) &__kernel_start,  (uint64_t ) &__kernel_end - (uint64_t) &__kernel_start, PTE_W | PTE_R | PTE_X);
-	map_range((uint64_t) placement, (uint64_t) placement, PAGE_SIZE, PTE_W | PTE_R);
-	map_range((uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
+	map_range_at((uint64_t) placement, (uint64_t) placement, PAGE_SIZE, PTE_W | PTE_R);
+	map_range((uint64_t) &__heap_start, HEAP_START_SIZE, PTE_W | PTE_R);
+	map_range_at((uint64_t) &__kernel_start, (uint64_t) &__kernel_start,  (uint64_t ) &__kernel_end - (uint64_t) &__kernel_start, PTE_W | PTE_R | PTE_X);
+	map_range_at((uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
 
 	switch_table(root_table);
-
 	enabled = TRUE;	
 }

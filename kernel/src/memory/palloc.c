@@ -54,5 +54,5 @@ request_page(uint64_t addr)
 {
 	uint64_t page = find_free();
 	alloc_frame(page);
-	map_range(addr, page, PAGE_SIZE, PTE_R | PTE_W);
+	map_range_at(addr, page, PAGE_SIZE, PTE_R | PTE_W);
 }
