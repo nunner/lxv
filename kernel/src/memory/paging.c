@@ -132,7 +132,7 @@ map_range(uint64_t vaddr, uint64_t size, uint64_t flags)
 
 		uint64_t pos = vaddr + i;
 		uint64_t ptr = find_free();
-		map_range_at(pos, ptr, size, flags);
+		map_range_at(pos, ptr, PAGE_SIZE, flags);
 	}
 
 	// To flush.
@@ -169,8 +169,9 @@ init_paging()
 	map_range_at((uint64_t) placement, (uint64_t) placement, PAGE_SIZE, PTE_W | PTE_R);
 	map_range((uint64_t) &__heap_start, HEAP_START_SIZE, PTE_W | PTE_R);
 	map_range_at((uint64_t) &__kernel_start, (uint64_t) &__kernel_start,  (uint64_t ) &__kernel_end - (uint64_t) &__kernel_start, PTE_W | PTE_R | PTE_X);
-	map_range_at((uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
 
 	switch_table(root_table);
 	enabled = TRUE;	
+
+	map_range_at((uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
 }

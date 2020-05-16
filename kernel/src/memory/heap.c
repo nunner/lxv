@@ -16,24 +16,27 @@ void
 set_size(node_t *node)
 {
 	if(node->next != 0)
-		node->size = node->next - (node + sizeof(node_t));
+		node->size = (uint64_t) node->next - ((uint64_t) node + sizeof(node_t));
 }
 
 void
 clean(heap_t *heap)
 {
-	(void) heap;
 	
-	node_t *curr = current_heap->start;
+	node_t *curr = heap->start;
 	node_t *temp;	
 
 	while(curr->next != 0) {
 		if(!curr->active) {
 			temp = curr;
-			while(temp->next != 0 && !temp->active)
+			while(temp->next != temp && temp->next != 0 && !temp->active)
 				temp = temp->next;
 			set_size(curr);
 			curr->next = temp;
+
+			// For some reason, this happens sometimes.
+			if(temp->next == temp)
+				temp->next = 0;
 		}
 		
 		curr = curr->next;
@@ -56,6 +59,8 @@ expand(heap_t *heap, size_t size)
 	node_t *last_node = (node_t *) (addr - sizeof(node_t));
 	current_heap->end->next = last_node;
 	current_heap->end = last_node;
+
+	heap->size += size;
 	
 	clean(current_heap);
 }
@@ -86,7 +91,7 @@ malloc(size_t size)
 		curr = curr->next;
 	}
 
-	expand(current_heap, size);
+	expand(current_heap, size + 2 * sizeof(node_t));
 
 	return malloc(size);
 }

@@ -17,8 +17,7 @@ main()
 	init_paging();
 	setup_heap();
 
-	node_t *test = malloc(PAGE_SIZE);
-	free(test);
+	int *a = malloc(HEAP_START_SIZE);
 
 	uart_write("Hello, world\n");
 
