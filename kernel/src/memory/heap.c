@@ -1,5 +1,7 @@
 #include "memory/heap.h"
 
+#include "os.h"
+
 #include "memory/paging.h"
 #include "memory/palloc.h"
 
@@ -31,8 +33,8 @@ clean(heap_t *heap)
 			temp = curr;
 			while(temp->next != temp && temp->next != 0 && !temp->active)
 				temp = temp->next;
-			set_size(curr);
 			curr->next = temp;
+			set_size(curr);
 
 			// For some reason, this happens sometimes.
 			if(temp->next == temp)
@@ -51,7 +53,10 @@ expand(heap_t *heap, size_t size)
 
 	uint64_t addr = (uint64_t) heap + heap->size;
 
-	for(size_t i = 0; i < size; i += PAGE_SIZE) {
+	addr &= ~(0x1FFF);
+	addr += PAGE_SIZE;
+
+	for(size_t i = 0; i < size/PAGE_SIZE; i++) {
 		request_page(addr);
 		addr += PAGE_SIZE;
 	}

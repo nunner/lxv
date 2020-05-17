@@ -8,3 +8,9 @@
 
 // Paging variables
 #define PAGE_FRAME_START 0x80000000
+
+#define LOGGING
+
+void
+kprintf(char *s, ...);
+

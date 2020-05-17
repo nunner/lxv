@@ -3,6 +3,8 @@
 #include "cpu/supervisor/interrupt.h"
 #include "cpu/supervisor/plic.h"
 
+#include "os.h"
+
 #include "driver/uart.h"
 
 #define INTERRUPT 0x8000000000000000
@@ -16,7 +18,7 @@
 	exceptions[exception] = handler; \
 }
 
-void stub(uint64_t i);
+void stub(uint64_t code, uint64_t value);
 
 static void (*interrupts[32])(uint64_t value);
 static void (*exceptions[32])(uint64_t value);
@@ -39,26 +41,27 @@ enable_supervisor_interrupts()
 	csr_read_set(sstatus, 1<<3);
 }
 
-void
-handle_supervisor_trap()
-{
+void __attribute__((interrupt("supervisor")))
+handle_supervisor_trap() {
 	uint64_t interrupt  = csr_read(scause) & INTERRUPT;
 	uint64_t code       = csr_read(scause) & CODE;
 	uint64_t val        = csr_read(stval);
 
 	if(interrupt) {
 		if(interrupts[code]) interrupts[code](val);
-		else stub(val);
+		else stub(code, val);
 	} else {
 		if(exceptions[code]) exceptions[code](val);
-		else stub(val);
+		else stub(code, val);
 	}
+
+	//csr_write(sepc, csr_read(sepc)+4);
 }
 
 void
-stub(uint64_t value)
+stub(uint64_t code, uint64_t value)
 {
 	(void) value;
-	uart_write("Aaaaaaaaaaaaaaaaaaaaahh!!!\n");
+	kprintf("Got an interrupt/exception with code %d\n", code);
 }
 

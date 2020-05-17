@@ -52,6 +52,9 @@ find_free()
 void
 request_page(uint64_t addr)
 {
+#ifdef LOGGING
+	kprintf("Requesting page at %d\n", addr);
+#endif
 	uint64_t page = find_free();
 	alloc_frame(page);
 	map_range_at(addr, page, PAGE_SIZE, PTE_R | PTE_W);

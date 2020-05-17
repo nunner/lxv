@@ -22,4 +22,8 @@ _start:
 
 	csrrw x0, mie, t0
 
+	li t0, 0b11
+
+	csrrw x0, mcounteren, t0
+
 	mret

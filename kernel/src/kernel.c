@@ -1,9 +1,14 @@
 #include "os.h"
 
+#include "cpu/asm.h"
+
+#include "driver/timer.h"
+
 #include "cpu/supervisor/interrupt.h"
 #include "driver/uart.h"
 #include "memory/mmu.h"
 #include "memory/paging.h"
+#include "memory/palloc.h"
 
 
 void 
@@ -17,10 +22,8 @@ main()
 	init_paging();
 	setup_heap();
 
-	int *a = malloc(HEAP_START_SIZE);
-
-	uart_write("Hello, world\n");
+	kprintf("Hello, world\n");
 
 	while(1)
-		__asm__("wfi");
+		kprintf("Time: %d\n", csr_read(satp));
 }

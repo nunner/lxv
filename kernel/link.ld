@@ -36,6 +36,6 @@ SECTIONS {
 
 
 	PROVIDE(__placement_addr = ALIGN(4K));
-	. += 0x2000;
+	. = 0x90000000;
 	PROVIDE(__heap_start = ALIGN(4K));
 }
