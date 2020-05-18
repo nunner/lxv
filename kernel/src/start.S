@@ -1,5 +1,8 @@
 .global _start
 .global main
+.global setup_cpu
+.global handle_machine_trap
+
 .section .text.prologue
 
 _start: 
@@ -13,17 +16,6 @@ _start:
 	la t0, main
 	csrw mepc, t0
 
-	li t0, 0xffff
-
-	csrrw x0, medeleg, t0
-	csrrw x0, mideleg, t0
-
-	li t0, 0xffffffff
-
-	csrrw x0, mie, t0
-
-	li t0, 0b11
-
-	csrrw x0, mcounteren, t0
+	call setup_cpu
 
 	mret

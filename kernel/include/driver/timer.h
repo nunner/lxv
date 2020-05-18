@@ -1,7 +1,9 @@
 #pragma once
 
-#define MTIME 	0x0200bbff8
-#define TIMECMP 0x02004000
+#define MTIME 	0x0200bff8
+#define TIMECMP 0x02004000 
+
+#define FREQUENCY 10000000
 
 #include "stdint.h"
 

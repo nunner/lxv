@@ -3,6 +3,8 @@
 #include "cpu/supervisor/interrupt.h"
 #include "cpu/supervisor/plic.h"
 
+#include "scheduler/schedule.h"
+
 #include "os.h"
 
 #include "driver/uart.h"
@@ -28,6 +30,7 @@ setup_supervisor_interrupts() {
 	init_plic();
 
 	// Iinitialize your exceptions/interrupts here.
+	REGISTER_INTERRUPT(7, schedule);
 
 	// Enable interrupts on the PLIC controller
 	register_plic_interrupt(10);
@@ -54,8 +57,6 @@ handle_supervisor_trap() {
 		if(exceptions[code]) exceptions[code](val);
 		else stub(code, val);
 	}
-
-	//csr_write(sepc, csr_read(sepc)+4);
 }
 
 void
@@ -63,5 +64,6 @@ stub(uint64_t code, uint64_t value)
 {
 	(void) value;
 	kprintf("Got an interrupt/exception with code %d\n", code);
+	csr_write(sepc, csr_read(sepc)+4);
 }
 

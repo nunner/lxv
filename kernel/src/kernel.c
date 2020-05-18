@@ -2,8 +2,6 @@
 
 #include "cpu/asm.h"
 
-#include "driver/timer.h"
-
 #include "cpu/supervisor/interrupt.h"
 #include "driver/uart.h"
 #include "memory/mmu.h"
@@ -24,6 +22,6 @@ main()
 
 	kprintf("Hello, world\n");
 
-	while(1)
-		kprintf("Time: %d\n", csr_read(satp));
+	for(;;)
+		__asm__("wfi");	
 }
