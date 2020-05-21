@@ -29,7 +29,7 @@ extern volatile void __placement_addr;
 static pte_t *placement;
 static bool enabled;
 
-static pt_t *root_table;
+pt_t *root_table;
 pt_t *current_table;
 
 /*
@@ -138,6 +138,31 @@ map_range(uint64_t vaddr, uint64_t size, uint64_t flags)
 
 	// To flush.
 	if(enabled) switch_table(current_table);
+}
+
+// Translate a virtual address to a physical one
+uint64_t
+virt_to_phys(uint64_t addr)
+{
+	pte_t *page = find(current_table, addr, FALSE);
+	if(page != 0)
+		return (page->ppn << 12) + (addr & 0xFFF);
+	else
+		return 0;
+}
+
+// Translate a virtual address to a physical one, in M mode
+uint64_t
+m_virt_to_phys(uint64_t addr)
+{
+	enabled = FALSE;
+	pte_t *page = find(current_table, addr, FALSE);
+	enabled = TRUE;
+
+	if(page != 0)
+		return (page->ppn << 12) + (addr & 0xFFF);
+	else
+		return 0;
 }
 
 void

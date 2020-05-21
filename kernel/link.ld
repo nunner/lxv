@@ -21,6 +21,8 @@ SECTIONS {
 	}
 	.data : {
 		_data = .;
+		PROVIDE(__kernel_proc = .);
+		. += 0x1000;
 		/* https://groups.google.com/a/groups.riscv.org/d/msg/sw-dev/60IdaZj27dY/s1eJMlrUAQAJ */
 		PROVIDE(__global_pointer = . + 0x800);
 		__data = .;

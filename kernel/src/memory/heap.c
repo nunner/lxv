@@ -90,7 +90,7 @@ malloc(size_t size)
 			set_size(curr);
 			set_size(curr->next);
 
-			return curr + sizeof(node_t);
+			return (void *) ((uint64_t) curr + sizeof(node_t));
 		}
 
 		curr = curr->next;

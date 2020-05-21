@@ -41,3 +41,9 @@ map_range_at_table(pt_t *pagetable, uint64_t vaddr, uint64_t paddr, uint64_t siz
 
 void
 map_page(uint64_t vaddr, uint64_t flags);
+
+uint64_t
+virt_to_phys(uint64_t addr);
+
+uint64_t
+m_virt_to_phys(uint64_t addr);

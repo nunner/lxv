@@ -3,7 +3,18 @@
 #include "cpu/machine/interrupt.h"
 #include "cpu/supervisor/interrupt.h"
 
+#include "memory/mmu.h"
+#include "scheduler/schedule.h"
+
 #include "driver/timer.h"
+
+extern void 
+machine_trap_entry();
+
+extern void
+setup_init_proc();
+
+extern process_t *init;
 
 void
 setup_cpu()
@@ -28,7 +39,10 @@ setup_cpu()
 	csr_write(mie, 0xffffffff);
 
 	csr_read_set(mstatus, 1<<3);
-	csr_write(mtvec, handle_machine_trap);
+	csr_write(mtvec, machine_trap_entry);
+
+	setup_init_proc();
+	csr_write(mscratch, &init->frame);
 
 	set_limit(get_time() + FREQUENCY);
 }

@@ -3,7 +3,7 @@
 #define MTIME 	0x0200bff8
 #define TIMECMP 0x02004000 
 
-#define FREQUENCY 10000000
+#define FREQUENCY 100000
 
 #include "stdint.h"
 
