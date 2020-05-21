@@ -5,7 +5,9 @@ QEMU=qemu-system-riscv64 \
 	 -machine virt \
 	 -serial stdio \
  	 -nographic \
+	 -machine virt \
  	 -monitor tcp::1234,server,nowait \
+	 -device virtio-net-device \
 	 -bios none \
 	 -kernel $(KERNEL)
 
