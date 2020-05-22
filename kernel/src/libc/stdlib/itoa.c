@@ -2,17 +2,20 @@
 
 #include "string.h"
 
-char *
-itoa(uint32_t value, char *str)
+void
+itoa(uint64_t n, char *s)
 {
-    int i = 0;
-    do {
-        str[i++] = value % 10 + '0';
-    } while((value /= 10) > 0);
 
-    str[i] = '\0';
+	int i, sign;
 
-    strrev(str);
-
-    return str;
+	if ((sign = n) < 0)  /* record sign */
+		n = -n;          /* make n positive */
+	i = 0;
+	do {       /* generate digits in reverse order */
+		s[i++] = n % 10 + '0';   /* get next digit */
+	} while ((n /= 10) > 0);     /* delete it */
+	if (sign < 0)
+		s[i++] = '-';
+	s[i] = '\0';
+	strrev(s);
 }

@@ -39,7 +39,7 @@ start_kernel_process(job_t job)
 	proc->state = RUNNING;
 	proc->frame.pc = (uint64_t) job;
 	proc->frame.sp = proc->stack[4093];
-	proc->frame.satp = (uint64_t) virt_to_phys((uint64_t) root_table);
+	//proc->frame.satp = (uint64_t) virt_to_phys((uint64_t) root_table);
 	proc->pid = pid++;
 
 	process_t *idx = init;

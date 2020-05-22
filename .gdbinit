@@ -13,6 +13,6 @@ target remote localhost:26000
 
 file img.elf
 b _start
-b main
+b main:38
 b handle_supervisor_trap
 b scan_virtio

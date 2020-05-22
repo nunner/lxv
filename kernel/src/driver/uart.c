@@ -1,15 +1,19 @@
 #include "driver/uart.h"
 
 #include "os.h"
+#include "scheduler/schedule.h"
 
 #include "stdint.h"
 #include "stdlib.h"
+#include "string.h"
 
 #include <stdarg.h>
 
 // TODO: fix __uart symbol stuff
 extern volatile void __uart;
 uint8_t *control;
+
+CREATE_MUTEX(CONSOLE_MUTEX);
 
 // Refer to 16550D docs
 void
@@ -35,14 +39,15 @@ uart_cwrite(char c)
 void
 uart_write(char *s)
 {
-	do {
-		uart_cwrite(*s);
-	} while(*s++ != '\0');
+	while(*s != 0) {
+		uart_cwrite(*s++);
+	}
 }
 
 void
 kprintf (char *s, ...)
 {
+	MUTEX_LOCK(CONSOLE_MUTEX);
     char buff[256];
 
     va_list args;
@@ -57,14 +62,14 @@ kprintf (char *s, ...)
                 ++s;
                 switch(*s) {
                     case 'd': {
-                        uint32_t num = va_arg(args, uint32_t);
+                        uint32_t num = va_arg(args, uint64_t);
                         itoa(num, buff);
-                        kprintf("%s", buff);
+						uart_write(buff);
                     }
                         break;
                     case 's': {
                         char *s = va_arg(args, char *);
-                        kprintf(s);
+						uart_write(s);
                     }
                         break;
                     case 'c': {
@@ -83,6 +88,7 @@ kprintf (char *s, ...)
         }
         ++s;
     }
+	MUTEX_UNLOCK(CONSOLE_MUTEX);
 }
 
 char

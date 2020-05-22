@@ -5,6 +5,8 @@
 #include "memory/paging.h"
 #include "memory/palloc.h"
 
+CREATE_MUTEX(MALLOC_MUTEX);
+
 static heap_t *current_heap;
 
 void
@@ -24,7 +26,6 @@ set_size(node_t *node)
 void
 clean(heap_t *heap)
 {
-	
 	node_t *curr = heap->start;
 	node_t *temp;	
 
@@ -73,7 +74,7 @@ expand(heap_t *heap, size_t size)
 void *
 malloc(size_t size)
 {
-	(void) size;
+	MUTEX_LOCK(MALLOC_MUTEX);
 
 	node_t *curr = current_heap->start;
 	node_t *temp;	
@@ -98,6 +99,7 @@ malloc(size_t size)
 
 	expand(current_heap, size + 2 * sizeof(node_t));
 
+	MUTEX_UNLOCK(MALLOC_MUTEX);
 	return malloc(size);
 }
 

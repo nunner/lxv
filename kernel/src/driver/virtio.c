@@ -51,6 +51,8 @@ void
 setup_device(virtio_dev_t *dev)
 {
 	int id = get_virtio_field(uint32_t, dev, DeviceID);
+
+	write_virtio_field(0, uint32_t, dev, Status);
 		
 	if(setup_functions[id] != 0)
 		setup_functions[id](dev);

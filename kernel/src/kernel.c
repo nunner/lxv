@@ -5,6 +5,17 @@
 #include "driver/virtio.h"
 #include "memory/mmu.h"
 #include "memory/paging.h"
+#include "scheduler/proc.h"
+
+void
+print()
+{
+	for(;;) {
+		static int i = 0;
+		//kprintf("Task 2: %d\n", i);
+		i++;
+	}
+}
 
 void 
 main()
@@ -21,6 +32,11 @@ main()
 	setup_heap();
 
 	scan_virtio();
+	
+	start_kernel_process(print);
 
-	for(;;);
+	int i = 0; 
+	for(;;) {
+		kprintf("Task 1.");
+	};
 }

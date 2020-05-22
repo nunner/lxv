@@ -3,15 +3,12 @@
 void
 strrev (char *s)
 {
-    int i = strlen(s) - 1, j = 0;
-
-    char ch;
-    while (i > j)
-    {
-        ch = s[i];
-        s[i] = s[j];
-        s[j] = ch;
-        i--;
-        j++;
-    }
+	 int i, j;
+     char c;
+ 
+     for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+         c = s[i];
+         s[i] = s[j];
+         s[j] = c;
+     }
 }

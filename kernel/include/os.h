@@ -21,5 +21,7 @@
 	#define log(s,...) 
 #endif
 
+#include "scheduler/mutex.h"
+
 void
 kprintf(char *s, ...);

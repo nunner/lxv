@@ -7,7 +7,7 @@
 
 #include "stdint.h"
 
-char *
-itoa(uint32_t value, char *str);
+void
+itoa(uint64_t value, char *str);
 
 #endif //LEOS_STDLIB_H
