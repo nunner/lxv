@@ -1,5 +1,7 @@
 #include "scheduler/proc.h"
 
+#include "os.h"
+
 #include "scheduler/schedule.h"
 #include "memory/heap.h"
 #include "memory/paging.h"
@@ -11,7 +13,9 @@ extern pt_t *root_table;
 
 extern void main();
 extern volatile void __kernel_proc;
-extern volatile void __stack_top;
+extern volatile void __kernel_stack;
+
+CREATE_MUTEX(PROC_MUTEX)
 
 /*
  * This functions runs in M-Mode!
@@ -24,7 +28,7 @@ setup_init_proc()
 
 	init->state = RUNNING;
 	init->frame.pc = (uint64_t) main;
-	init->frame.sp = (uint64_t) &__stack_top;
+	sp(init->frame) = (uint64_t) &__kernel_stack;
 	init->pid = 0;
 	init->next = 0;
 }
@@ -34,16 +38,18 @@ start_kernel_process(job_t job)
 {
 	static uint64_t pid = 0;
 	process_t *proc = malloc(sizeof(process_t));
-	//memset(proc, 0, sizeof(process_t));		
+	memset(proc, 0, sizeof(process_t));		
 
 	proc->state = RUNNING;
 	proc->frame.pc = (uint64_t) job;
-	proc->frame.sp = proc->stack[4093];
+	sp(proc->frame) = (uint64_t) &proc->stack[4093];
 	//proc->frame.satp = (uint64_t) virt_to_phys((uint64_t) root_table);
 	proc->pid = pid++;
 
-	process_t *idx = init;
+	lock();
+	process_t *idx = current_process;
 	while(idx->next != 0)
 		idx = idx->next;
 	idx->next = proc;
+	unlock();
 }

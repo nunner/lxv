@@ -2,6 +2,7 @@
 
 #include "os.h"
 #include "scheduler/schedule.h"
+#include "cpu/syscall.h"
 
 #include "stdint.h"
 #include "stdlib.h"

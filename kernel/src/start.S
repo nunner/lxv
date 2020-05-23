@@ -15,7 +15,7 @@
 
 _start: 
 	# Setup the stack
-	la sp, __stack_top
+	la sp, __kernel_stack 
 	la gp, __global_pointer	
 
 	li t0, (0b1 << 11) | (0b1 << 5)

@@ -1,24 +1,15 @@
-#include "cpu/cpu.h"
-#include "cpu/asm.h"
 #include "cpu/supervisor/interrupt.h"
-#include "cpu/supervisor/plic.h"
 
 #include "scheduler/schedule.h"
 
 #include "os.h"
 
+#include "cpu/asm.h"
+#include "cpu/common.h"
+#include "cpu/cpu.h"
 #include "driver/uart.h"
+#include "cpu/supervisor/plic.h"
 
-#define INTERRUPT 0x8000000000000000
-#define CODE ~(INTERRUPT)
-
-#define REGISTER_INTERRUPT(interrupt, handler) {\
-	interrupts[interrupt] = handler; \
-}
-
-#define REGISTER_EXCEPTION(exception, handler) {\
-	exceptions[exception] = handler; \
-}
 
 void stub(uint64_t code, uint64_t value);
 
@@ -26,7 +17,8 @@ static void (*interrupts[32])(uint64_t value);
 static void (*exceptions[32])(uint64_t value);
 
 void
-setup_supervisor_interrupts() {
+setup_supervisor_interrupts() 
+{
 	init_plic();
 
 	// Iinitialize your exceptions/interrupts here.

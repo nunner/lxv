@@ -15,12 +15,16 @@ setup_heap()
 	kernel_heap = (heap_t *) &__heap_start;	
 
 	kernel_heap->size = HEAP_START_SIZE;
-	kernel_heap->start = (node_t *) (&__heap_start + sizeof(heap_t));
-	kernel_heap->end = (node_t *) (&__heap_start + kernel_heap->size - sizeof(heap_t));
+	kernel_heap->start = (node_t *) (&__heap_start + sizeof(node_t));
+	kernel_heap->end = (node_t *) (&__heap_start + kernel_heap->size - sizeof(node_t));
 
 	kernel_heap->start->next = kernel_heap->end;
 	kernel_heap->start->size = ((uint64_t) kernel_heap->end - (uint64_t) kernel_heap->start);
 	kernel_heap->start->active = FALSE;
+
+	kernel_heap->end->next = 0;
+	kernel_heap->end->size = 0;
+	kernel_heap->end->active = 0;
 
 	switch_heap(kernel_heap);
 	return kernel_heap;

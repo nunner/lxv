@@ -22,6 +22,7 @@
 #endif
 
 #include "scheduler/mutex.h"
+#include "cpu/syscall.h"
 
 void
 kprintf(char *s, ...);

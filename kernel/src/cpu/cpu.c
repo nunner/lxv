@@ -8,6 +8,11 @@
 
 #include "driver/timer.h"
 
+#define S_ECALL (1 << 9)
+
+#define EEXCEPTIONS S_ECALL
+#define IEXCEPTIONS 0
+
 extern void 
 machine_trap_entry();
 
@@ -34,8 +39,9 @@ setup_cpu()
 	csrrw x0, mcounteren, t0
 	*/
 
-	csr_write(medeleg, 0xffffffff);
-	csr_write(mideleg, 0xffffffff);
+	setup_machine_interrupts();
+	csr_write(medeleg, 0xffffffff & ~(EEXCEPTIONS));
+	csr_write(mideleg, 0xffffffff & ~(IEXCEPTIONS));
 	csr_write(mie, 0xffffffff);
 
 	csr_read_set(mstatus, 1<<3);

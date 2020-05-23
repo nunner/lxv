@@ -2,20 +2,37 @@
 
 #include "os.h"
 
-#include "scheduler/schedule.h"
 #include "cpu/asm.h"
+#include "cpu/common.h"
 #include "driver/timer.h"
+#include "scheduler/schedule.h"
 #include "stdint.h"
 
-extern process_t *current_process;
+#define TIMER 		7
+#define SYSCALL 	9
 
-// we are *only* going to handle the timer here, and then jump to the 
-// supervisor handler.
+extern process_t *current_process_phys;
+extern process_t *init;
+extern volatile void __machine_stack;
+
+uint64_t machine_stack_pos = (uint64_t) &__machine_stack;
+
+static void (*interrupts[32])(uint64_t value);
+static void (*exceptions[32])(uint64_t value);
+
 void 
-handle_machine_trap(uint64_t sp) 
+machine_stub(uint64_t val)
 {
 	frame_t *frame = (frame_t *) csr_read(mscratch);
-	frame->sp = sp;
+	frame->pc = csr_read(mepc);
+}
+
+void
+handle_timer(uint64_t val) 
+{
+	(void) val;
+
+	frame_t *frame = (frame_t *) csr_read(mscratch);
 	frame->pc = csr_read(mepc);
 
 	set_limit(get_time() + FREQUENCY);
@@ -23,5 +40,58 @@ handle_machine_trap(uint64_t sp)
 	schedule();
 	frame = (frame_t *) csr_read(mscratch);
 
+	__asm__("mv %0, sp" : "=r" (machine_stack_pos));
 	csr_write(mepc, frame->pc);
+}
+
+void
+handle_syscall(uint64_t num)
+{
+	frame_t *frame = (frame_t *) csr_read(mscratch);
+	frame->pc = csr_read(mepc) + 4;
+
+	switch(num) {
+		case 0: 
+				current_process_phys->state = STOPPED;	
+				break;
+		case 1: {
+					schedule();
+					frame = (frame_t *) csr_read(mscratch);
+
+					__asm__("mv %0, sp" : "=r" (machine_stack_pos));
+				}
+				break;
+	}
+
+	csr_write(mepc, frame->pc);
+}
+
+void
+setup_machine_interrupts() 
+{
+	// Iinitialize your exceptions/interrupts here.
+	REGISTER_INTERRUPT(TIMER, handle_timer);
+	REGISTER_EXCEPTION(SYSCALL, handle_syscall);
+}
+
+void 
+handle_machine_trap() 
+{
+	uint64_t interrupt  = csr_read(mcause) & INTERRUPT;
+	uint64_t code       = csr_read(mcause) & CODE;
+	uint64_t val        = csr_read(mtval);
+
+	switch(code) {
+		case SYSCALL:
+			__asm__("mv %0, a0": "=r" (val):);
+			break;
+	}
+
+	if(interrupt) {
+		if(interrupts[code]) interrupts[code](val);
+		else machine_stub(val);
+	} else {
+		if(exceptions[code]) exceptions[code](val);
+		else machine_stub(val);
+	}
 }

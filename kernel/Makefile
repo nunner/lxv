@@ -20,8 +20,7 @@ CFLAGS+= -I $(INCLUDE) \
 		 -nostdlib \
 		 -nodefaultlibs \
 		 -mcmodel=medany \
- 		 -falign-functions=16 \
-		 -Wno-int-to-void-pointer-cast
+ 		 -falign-functions=16
 
 all: build
 

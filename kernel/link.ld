@@ -30,8 +30,10 @@ SECTIONS {
 
 	.bss : {
 		_bss = .;
-		. += 128K;
-		PROVIDE(__stack_top = .);
+		. += 0x1000;
+		PROVIDE(__kernel_stack = .);
+		. += 0x1000K;
+		PROVIDE(__machine_stack = .);
 		__bss = .;
 	}
 	__kernel_end = .;

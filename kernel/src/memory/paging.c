@@ -58,6 +58,7 @@ map_object(uint64_t addr)
 pte_t *
 find(pt_t *pagetable, uint64_t va, bool create)
 {
+	if(enabled) lock();
 	pte_t *page;
 	pt_t  *current = pagetable;
 
@@ -72,7 +73,10 @@ find(pt_t *pagetable, uint64_t va, bool create)
 		page = &current->pages[VPN(va, i)];
 
 		if(page == 0 || !(page->flags & PTE_V)) {
-			if(!create) return 0;
+			if(!create) {
+				if(enabled) unlock();
+				return 0;
+			}
 			
 			uint64_t addr = (uint64_t) kmalloc_a(sizeof(pt_t));
 
@@ -83,7 +87,8 @@ find(pt_t *pagetable, uint64_t va, bool create)
 
 		if(!enabled) current = (pt_t *) PA(page);
 	}
-
+	
+	if(enabled) unlock();
 	return &current->pages[VPN(va, 0)];
 }
 
@@ -128,7 +133,8 @@ map_range_at_table(pt_t *pagetable, uint64_t vaddr, uint64_t paddr, uint64_t siz
 void
 map_range(uint64_t vaddr, uint64_t size, uint64_t flags)
 {
-	for(size_t i = 0; i <= size; i += PAGE_SIZE)
+	vaddr &= ~(0x1FFF);
+	for(size_t i = 0; i < size; i += PAGE_SIZE)
 	{
 
 		uint64_t pos = vaddr + i;
@@ -146,21 +152,24 @@ virt_to_phys(uint64_t addr)
 {
 	pte_t *page = find(current_table, addr, FALSE);
 	if(page != 0)
-		return (page->ppn << 12) + (addr & 0xFFF);
+		return (PA(page)) + (addr & 0x1FFF);
 	else
 		return 0;
 }
 
-// Translate a virtual address to a physical one, in M mode
 uint64_t
 m_virt_to_phys(uint64_t addr)
 {
-	enabled = FALSE;
-	pte_t *page = find(current_table, addr, FALSE);
-	enabled = TRUE;
+	pte_t *page;
+	pt_t *current = current_table;
+
+	for(int64_t i = 2; i >= 0; i--) {
+		page = &current->pages[VPN(addr, i)];
+		current = (pt_t *) PA(page);
+	}
 
 	if(page != 0)
-		return (page->ppn << 12) + (addr & 0xFFF);
+		return (PA(page)) + (addr & 0x1FFF);
 	else
 		return 0;
 }

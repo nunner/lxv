@@ -10,11 +10,22 @@
 void
 print()
 {
-	for(;;) {
-		static int i = 0;
-		//kprintf("Task 2: %d\n", i);
-		i++;
-	}
+	for(;;)
+		kprintf("Task 2\n");
+}
+
+void
+print2()
+{
+	for(;;)
+		kprintf("Task 3\n");
+}
+
+void
+print3()
+{
+	for(;;)
+		kprintf("Task 4\n");
 }
 
 void 
@@ -32,11 +43,10 @@ main()
 	setup_heap();
 
 	scan_virtio();
-	
-	start_kernel_process(print);
 
-	int i = 0; 
-	for(;;) {
-		kprintf("Task 1.");
-	};
+	start_kernel_process(print);
+	start_kernel_process(print2);
+	//start_kernel_process(print3);
+
+	for(;;) kprintf("Task 1\n");
 }

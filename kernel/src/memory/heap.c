@@ -54,17 +54,14 @@ expand(heap_t *heap, size_t size)
 
 	uint64_t addr = (uint64_t) heap + heap->size;
 
-	addr &= ~(0x1FFF);
-	addr += PAGE_SIZE;
-
-	for(size_t i = 0; i < size/PAGE_SIZE; i++) {
-		request_page(addr);
+	for(size_t i = 0; i <= size/PAGE_SIZE; i++) {
+		map_range(addr, PAGE_SIZE, PTE_R | PTE_W);
 		addr += PAGE_SIZE;
 	}
 
 	node_t *last_node = (node_t *) (addr - sizeof(node_t));
-	current_heap->end->next = last_node;
-	current_heap->end = last_node;
+	heap->end->next = last_node;
+	heap->end = last_node;
 
 	heap->size += size;
 	
@@ -91,6 +88,7 @@ malloc(size_t size)
 			set_size(curr);
 			set_size(curr->next);
 
+			MUTEX_UNLOCK(MALLOC_MUTEX);
 			return (void *) ((uint64_t) curr + sizeof(node_t));
 		}
 

@@ -20,8 +20,13 @@ machine_trap_entry:
 	.endr
 
 	mv t5, t6
-	sd t6, (31*8)(t5)
+	csrr t6, mscratch
+	save_reg 6, t5
+
 	csrw mscratch, t5
+
+	mv a1, sp
+	la sp, __machine_stack 
 
 	call handle_machine_trap
 
