@@ -16,11 +16,11 @@ typedef enum {
 	STOPPED
 } state_t;
 
-typedef struct process {
+typedef struct process{
 	uint64_t pid;
 	frame_t frame;
 	state_t state;
-	uint64_t stack[4096];
+	uint32_t stack[4096];
 	struct process *next;
 } process_t;
 

@@ -38,13 +38,14 @@ start_kernel_process(job_t job)
 {
 	static uint64_t pid = 0;
 	process_t *proc = malloc(sizeof(process_t));
-	memset(proc, 0, sizeof(process_t));		
+	memset(&proc->frame, 0, sizeof(frame_t));		
 
 	proc->state = RUNNING;
 	proc->frame.pc = (uint64_t) job;
 	sp(proc->frame) = (uint64_t) &proc->stack[4093];
 	//proc->frame.satp = (uint64_t) virt_to_phys((uint64_t) root_table);
 	proc->pid = pid++;
+	proc->next = 0;
 
 	lock();
 	process_t *idx = current_process;

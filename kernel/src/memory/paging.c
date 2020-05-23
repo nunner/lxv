@@ -37,8 +37,14 @@ pt_t *current_table;
  */
 
 
-void
-switch_table(pt_t *t);
+/*
+ * Flush the page cache so that new mappings are readable.
+ */
+static inline void
+flush(uint64_t addr)
+{
+	__asm__("sfence.vma %0":: "r" (addr));
+}
 
 /**
  * What this does is a little weird. I have one page where I map 
@@ -52,7 +58,7 @@ map_object(uint64_t addr)
 
 	placement->ppn = (addr >> 12);
 	placement->flags = PTE_W | PTE_R | PTE_V;
-	switch_table(current_table);
+	flush((uint64_t) &__placement_addr);
 }
 
 pte_t *
@@ -109,10 +115,8 @@ map_range_at(uint64_t vaddr, uint64_t paddr, uint64_t size, uint64_t flags)
 		page->flags = flags;
 		page->ppn = (uint64_t) ((paddr + i) >> 12);
 		page->flags |= PTE_V;
+		if(enabled) flush(pos);
 	}
-
-	// To flush.
-	if(enabled) switch_table(current_table);
 }
 
 void
@@ -141,9 +145,6 @@ map_range(uint64_t vaddr, uint64_t size, uint64_t flags)
 		uint64_t ptr = find_free();
 		map_range_at(pos, ptr, PAGE_SIZE, flags);
 	}
-
-	// To flush.
-	if(enabled) switch_table(current_table);
 }
 
 // Translate a virtual address to a physical one

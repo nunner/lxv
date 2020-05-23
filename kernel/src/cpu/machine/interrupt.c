@@ -23,6 +23,7 @@ static void (*exceptions[32])(uint64_t value);
 void 
 machine_stub(uint64_t val)
 {
+	(void) val;
 	frame_t *frame = (frame_t *) csr_read(mscratch);
 	frame->pc = csr_read(mepc);
 }
@@ -53,7 +54,7 @@ handle_syscall(uint64_t num)
 	switch(num) {
 		case 0: 
 				current_process_phys->state = STOPPED;	
-				break;
+				// This is supposed to fall through.
 		case 1: {
 					schedule();
 					frame = (frame_t *) csr_read(mscratch);
