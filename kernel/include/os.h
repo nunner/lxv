@@ -16,9 +16,11 @@
 #define LOGGING
 
 #ifdef LOGGING
-	#define log(s,...) kprintf(s, __VA_ARGS__)
+	#define logf(s,...) kprintf(s, __VA_ARGS__)
+	#define log(s) kprintf(s);	
 #else
-	#define log(s,...) 
+	#define logf(s,...) 
+	#define log(s) 
 #endif
 
 #include "scheduler/mutex.h"

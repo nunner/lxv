@@ -26,8 +26,16 @@ typedef enum {
 	InterruptAck 	= 0x064,
 	Status 			= 0x070,
 	Config 			= 0x100,
-
 } offset;
+
+typedef enum {
+	ACKNOWLEDGE			= 1,
+	DRIVER				= 2,
+	DRIVER_OK			= 4,
+	FEATURES_OK			= 8,
+	DEVICE_NEEDS_RESET 	= 64,
+	FAILED				= 128,
+} driver_status;
 
 typedef void (*dev_setup_t)(virtio_dev_t *);
 

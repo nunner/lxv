@@ -17,10 +17,10 @@ static uint32_t *treshold;
 void
 init_plic()
 {
-	priority	= (uint32_t *) &__plic;
-	pending		= (uint32_t *) &__plic + 0x1000;
-	enable 		= (uint32_t *) &__plic + 0x2000;
-	treshold 	= (uint32_t *) &__plic + 0x0C200000;
+	priority	= (uint32_t *) ((uint64_t) &__plic);
+	pending		= (uint32_t *) ((uint64_t) &__plic + 0x1000);
+	enable 		= (uint32_t *) ((uint64_t) &__plic + 0x2000);
+	treshold 	= (uint32_t *) ((uint64_t) &__plic + 0x0C200000);
 }
 
 void

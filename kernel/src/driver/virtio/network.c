@@ -11,7 +11,8 @@ void
 setup_network(virtio_dev_t *dev)
 {
 	id = get_virtio_field(uint32_t, dev, DeviceID);
-	log("Setting up a network card.\n","");
+	log("Setting up a network card.\n");
 
-	
+	write_virtio_field(ACKNOWLEDGE, uint32_t, Status, dev);
+	write_virtio_field(DRIVER, uint32_t, Status, dev);
 }

@@ -57,7 +57,7 @@ setup_device(virtio_dev_t *dev)
 	if(setup_functions[id] != 0)
 		setup_functions[id](dev);
 	else
-		kprintf("No driver found for %s", types[id]);
+		logf("No driver found for %s", types[id]);
 }
 
 void
@@ -69,7 +69,7 @@ scan_virtio()
 		virtio_dev_t *dev = (virtio_dev_t *) (MMIO_START + i * MMIO_STEP);
 
 		if(get_virtio_field(uint32_t, dev, MagicValue) == MAGIC_VALUE) {
-			kprintf("Bus %d: \t%s\n", MMIO_COUNT - i, types[get_virtio_field(uint32_t, dev, DeviceID)]);
+			logf("Bus %d: \t%s\n", MMIO_COUNT - i, types[get_virtio_field(uint32_t, dev, DeviceID)]);
 
 			if(get_virtio_field(uint32_t, dev, DeviceID) != 0)
 				devices[MMIO_COUNT - 1 - i] = dev;
