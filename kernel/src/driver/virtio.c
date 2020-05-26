@@ -50,7 +50,7 @@ static virtio_dev_t *devices[MMIO_COUNT];
 void
 setup_device(virtio_dev_t *dev)
 {
-	int id = get_virtio_field(uint32_t, dev, DeviceID);
+	int id = read_virtio_field(uint32_t, dev, DeviceID);
 
 	write_virtio_field(0, uint32_t, dev, Status);
 		
@@ -68,10 +68,10 @@ scan_virtio()
 	for(size_t i = MMIO_COUNT - 1; i > 0 ; i--) {
 		virtio_dev_t *dev = (virtio_dev_t *) (MMIO_START + i * MMIO_STEP);
 
-		if(get_virtio_field(uint32_t, dev, MagicValue) == MAGIC_VALUE) {
-			logf("Bus %d: \t%s\n", MMIO_COUNT - i, types[get_virtio_field(uint32_t, dev, DeviceID)]);
+		if(read_virtio_field(uint32_t, dev, MagicValue) == MAGIC_VALUE) {
+			logf("Bus %d: \t%s\n", MMIO_COUNT - i, types[read_virtio_field(uint32_t, dev, DeviceID)]);
 
-			if(get_virtio_field(uint32_t, dev, DeviceID) != 0)
+			if(read_virtio_field(uint32_t, dev, DeviceID) != 0)
 				devices[MMIO_COUNT - 1 - i] = dev;
 		}
 	}

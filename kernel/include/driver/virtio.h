@@ -39,8 +39,10 @@ typedef enum {
 
 typedef void (*dev_setup_t)(virtio_dev_t *);
 
-#define get_virtio_field(type, dev, field) *((type* ) ((uint64_t) dev + field))
-#define write_virtio_field(value, type, dev, field) *((type* ) ((uint64_t) dev + field)) = value
+#define read_virtio_field(type, dev, field) *((type *) ((uint64_t) dev + field))
+#define write_virtio_field(value, type, dev, field) *((type *) ((uint64_t) dev + field)) = value
+#define set_virtio_field_bit(bit, type, dev, field) write_virtio_field(read_virtio_field(type, dev, field) | bit, type, dev, field);
+#define FEATURE(name, id) name = id,
 
 void
 scan_virtio();

@@ -50,6 +50,7 @@ kprintf (char *s, ...)
 {
 	MUTEX_LOCK(CONSOLE_MUTEX);
     char buff[256];
+	char hex[17];
 
     va_list args;
     va_start(args, s);
@@ -63,7 +64,7 @@ kprintf (char *s, ...)
                 ++s;
                 switch(*s) {
                     case 'd': {
-                        uint32_t num = va_arg(args, uint64_t);
+                        uint64_t num = va_arg(args, uint64_t);
                         itoa(num, buff);
 						uart_write(buff);
                     }

@@ -28,3 +28,6 @@
 
 void
 kprintf(char *s, ...);
+
+void
+panic(char *s);

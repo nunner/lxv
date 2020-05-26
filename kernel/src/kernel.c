@@ -30,3 +30,11 @@ main()
 
 	for(;;) ;
 }
+
+void
+panic(char *s)
+{
+	lock();
+	kprintf("Kernel panic: %s", s);
+	for(;;);
+}
