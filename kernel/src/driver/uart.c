@@ -10,7 +10,6 @@
 
 #include <stdarg.h>
 
-// TODO: fix __uart symbol stuff
 extern volatile void __uart;
 uint8_t *control;
 
@@ -50,7 +49,6 @@ kprintf (char *s, ...)
 {
 	MUTEX_LOCK(CONSOLE_MUTEX);
     char buff[256];
-	char hex[17];
 
     va_list args;
     va_start(args, s);

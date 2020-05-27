@@ -1,6 +1,7 @@
 #pragma once
 
 #include "driver/virtio.h"
+#include "net/net.h"
 
 #include "stdint.h"
 
@@ -10,7 +11,7 @@ typedef enum {
 } network_feature_t;
 
 typedef struct {
-	uint8_t mac[6];
+	mac_t mac;
 } virtio_net_config;
 
 void

@@ -15,7 +15,7 @@ QEMU=qemu-system-riscv64 \
 
 all: clean kernel
 
-.PHONY: bootdisk bootloader kernel
+.PHONY: kernel
 
 kernel:
 	make -C kernel

@@ -1,6 +1,7 @@
 #pragma once
 
+#include "net/net.h"
 #include "stdint.h"
 
 void
-print_mac(const uint8_t *mac);
+print_mac(const mac_t);

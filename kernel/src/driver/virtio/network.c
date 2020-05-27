@@ -24,18 +24,25 @@ setup_features(virtio_dev_t *dev)
 }
 
 void
+set_queues(virtio_dev_t *dev)
+{
+	(void) dev;	
+}
+
+void
 setup_network(virtio_dev_t *dev)
 {
 	log("Setting up a network card.\n");
 
-	write_virtio_field(0, 			uint32_t, dev, Status);
-	set_virtio_field_bit(ACKNOWLEDGE, uint32_t, dev, Status);
+	write_virtio_field(0, 				uint32_t, dev, Status);
+	set_virtio_field_bit(ACKNOWLEDGE, 	uint32_t, dev, Status);
 	set_virtio_field_bit(DRIVER, 		uint32_t, dev, Status);
 
 	uint32_t features = read_virtio_field(uint32_t, dev, GuestFeatures);
 	logf("%d\n", features);
 
 	setup_features(dev);
+	set_queues(dev);
 
 	set_virtio_field_bit(DRIVER_OK, uint32_t, dev, Status);
 
