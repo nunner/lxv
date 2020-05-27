@@ -16,10 +16,23 @@ setup_features(virtio_dev_t *dev)
 	set_virtio_field_bit(VIRTIO_NET_F_MAC, uint32_t, dev, GuestFeaturesSel);
 }
 
+// Returns whether the queue is in use or not.
+bool
+sel_queue(virtio_dev_t *dev, int num)
+{
+	write_virtio_field(num, uint32_t, dev, QueueSel);
+
+	if(!read_virtio_field(uint32_t, dev, QueueNumMax))
+		panic("Queue is not ready.");
+
+	return read_virtio_field(uint32_t, dev, QueuePFN);	
+}
+
 void
 set_queues(virtio_dev_t *dev)
 {
-	(void) dev;	
+	if(sel_queue(dev, 0))
+			panic("Error while setting up the network device.");
 }
 
 void
