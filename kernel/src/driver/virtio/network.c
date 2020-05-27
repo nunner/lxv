@@ -14,13 +14,6 @@ void
 setup_features(virtio_dev_t *dev)
 {
 	set_virtio_field_bit(VIRTIO_NET_F_MAC, uint32_t, dev, GuestFeaturesSel);
-
-	set_virtio_field_bit(DRIVER_OK, uint32_t, dev, Status);	
-
-	bool state = read_virtio_field(uint32_t, dev, Status) & DRIVER_OK;
-
-	if(!state)
-		panic("Couldn't negotiate features with network card.");
 }
 
 void
@@ -38,8 +31,8 @@ setup_network(virtio_dev_t *dev)
 	set_virtio_field_bit(ACKNOWLEDGE, 	uint32_t, dev, Status);
 	set_virtio_field_bit(DRIVER, 		uint32_t, dev, Status);
 
-	uint32_t features = read_virtio_field(uint32_t, dev, GuestFeatures);
-	logf("%d\n", features);
+	uint32_t features = read_virtio_field(uint32_t, dev, HostFeatures);
+	logf("Features: %d\n", features);
 
 	setup_features(dev);
 	set_queues(dev);
