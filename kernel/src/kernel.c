@@ -7,6 +7,8 @@
 #include "memory/paging.h"
 #include "scheduler/proc.h"
 
+#include "cpu/machine/plic.h"
+
 // To clean the current process list. This has to run in S mode.
 extern void clean_proc();
 
@@ -28,7 +30,9 @@ main()
 
 	start_kernel_process(clean_proc);
 
-	for(;;);
+	int i = 0;
+
+	for(;;) kprintf("Kernel %d\n", i++);
 }
 
 void

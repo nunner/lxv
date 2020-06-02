@@ -41,11 +41,8 @@ pt_t *current_table;
 /*
  * Flush the page cache so that new mappings are readable.
  */
-static inline void
-flush(uint64_t addr)
-{
-	__asm__("sfence.vma %0":: "r" (addr));
-}
+
+#define flush(x) __asm__("sfence.vma x0, x0")
 
 /**
  * What this does is a little weird. I have one page where I map 
@@ -185,7 +182,6 @@ switch_table(pt_t *table)
 	current_table = table;
 	csr_set(satp, (uint64_t) table >> 12);
 	csr_read_set(satp, (uint64_t) 8 << 60);
-	__asm__("sfence.vma");
 }
 
 void
@@ -194,23 +190,22 @@ init_paging()
 	for(size_t i = (uint64_t) &__kernel_start; i < (uint64_t) &__kernel_end; i += PAGE_SIZE)
 		alloc_frame(i);
 
+	alloc_frame((uint64_t) &__placement_addr);
+
 	root_table = (pt_t *) kmalloc_a(sizeof(pt_t));
 	memset(root_table, 0, sizeof(pt_t));
 
 	// Don't use switch_table yet because we don't want to invalidate the caches… I think
 	current_table = root_table;
 
-	placement = find(root_table, (uint64_t) &__placement_addr, TRUE);
-	uint64_t *obj = (uint64_t *) &__placement_addr;
-	(void) obj;
+	placement = find(root_table, (uint64_t) &__placement_addr, TRUE);	
 
 	map_range((uint64_t) &__heap_start, HEAP_START_SIZE, PTE_W | PTE_R);
 	map_range_at((uint64_t) placement, (uint64_t) placement, PAGE_SIZE, PTE_W | PTE_R);
 	map_range_at((uint64_t) &__kernel_start, (uint64_t) &__kernel_start,  (uint64_t ) &__kernel_end - (uint64_t) &__kernel_start, PTE_W | PTE_R | PTE_X);
 	map_range_at(MMIO_START, MMIO_START, MMIO_COUNT * MMIO_STEP, PTE_W | PTE_R);
-
 	map_range_at((uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
+
 	switch_table(root_table);
 	enabled = TRUE;	
-
 }

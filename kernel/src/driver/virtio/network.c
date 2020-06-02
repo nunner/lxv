@@ -39,11 +39,9 @@ set_queues(virtio_dev_t *dev)
 void
 network()
 {
+	static int i = 0; 
 	for(;;) {
-		if(packet) {
-			kprintf("Packet!");
-			for(;;);
-		}
+		kprintf("Nothing %d\n", i++);
 	}
 }
 
@@ -70,5 +68,5 @@ setup_network(virtio_dev_t *dev)
 
 	notify(10, &packet);
 	
-	start_kernel_process(network);
+	//start_kernel_process(network);
 }

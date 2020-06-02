@@ -17,7 +17,6 @@ target remote localhost:26000
 
 file img.elf
 b main
-#b handle_supervisor_trap
-b scan_virtio
-b setup_network
-b find if enabled == 1
+b handle_supervisor_trap
+#b scan_virtio
+#b setup_network

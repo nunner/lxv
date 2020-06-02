@@ -22,14 +22,6 @@ uint64_t machine_stack_pos = (uint64_t) &__machine_stack;
 static void (*interrupts[32])(uint64_t value);
 static void (*exceptions[32])(uint64_t value);
 
-void
-jump_to_s_mode(uint64_t func)
-{
-	csr_write(sscratch, csr_read(mepc));
-	csr_write(mepc, func);
-	__asm__("mv %0, sp" : "=r" (machine_stack_pos));
-}
-
 void 
 machine_stub(uint64_t val)
 {
@@ -86,12 +78,19 @@ setup_machine_interrupts()
 	REGISTER_EXCEPTION(SYSCALL, handle_syscall);
 }
 
+void
+oida()
+{
+}
+
 void 
 handle_machine_trap() 
 {
 	uint64_t interrupt  = csr_read(mcause) & INTERRUPT;
 	uint64_t code       = csr_read(mcause) & CODE;
 	uint64_t val        = csr_read(mtval);
+
+	if(code > 10) oida();
 
 	switch(code) {
 		case SYSCALL:
