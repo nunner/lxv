@@ -24,10 +24,14 @@
 #endif
 
 #include "scheduler/mutex.h"
+#include "scheduler/proc.h"
 #include "cpu/syscall.h"
 
 void
 kprintf(char *s, ...);
+
+void
+notify(uint64_t plic, uint64_t *var);
 
 void
 panic(char *s);

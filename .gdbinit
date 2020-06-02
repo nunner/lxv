@@ -16,8 +16,8 @@ layout split
 target remote localhost:26000
 
 file img.elf
-#b _start
-#b main
+b main
 #b handle_supervisor_trap
 b scan_virtio
 b setup_network
+b find if enabled == 1

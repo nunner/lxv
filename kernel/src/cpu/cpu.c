@@ -1,6 +1,7 @@
 #include "cpu/asm.h"
 
 #include "cpu/machine/interrupt.h"
+#include "cpu/machine/plic.h"
 #include "cpu/supervisor/interrupt.h"
 
 #include "memory/mmu.h"
@@ -40,8 +41,8 @@ setup_cpu()
 	*/
 
 	setup_machine_interrupts();
-	csr_write(medeleg, 0xffffffff & ~(EEXCEPTIONS));
-	csr_write(mideleg, 0xffffffff & ~(IEXCEPTIONS));
+	csr_set(medeleg, ~((uint64_t) 0) & ~(EEXCEPTIONS));
+	csr_set(mideleg, ~((uint64_t) 0) & ~(IEXCEPTIONS));
 	csr_write(mie, 0xffffffff);
 
 	csr_read_set(mstatus, 1<<3);
@@ -49,6 +50,11 @@ setup_cpu()
 
 	setup_init_proc();
 	csr_write(mscratch, &init->frame);
+
+	init_plic();
+
+	register_plic_interrupt(8);
+	register_plic_interrupt(10);
 
 	set_limit(get_time() + FREQUENCY);
 }

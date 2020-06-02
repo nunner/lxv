@@ -8,7 +8,6 @@
 #include "cpu/common.h"
 #include "cpu/cpu.h"
 #include "driver/uart.h"
-#include "cpu/supervisor/plic.h"
 
 
 void stub(uint64_t code, uint64_t value);
@@ -19,13 +18,8 @@ static void (*exceptions[32])(uint64_t value);
 void
 setup_supervisor_interrupts() 
 {
-	init_plic();
-
 	// Iinitialize your exceptions/interrupts here.
 	REGISTER_INTERRUPT(7, schedule);
-
-	// Enable interrupts on the PLIC controller
-	register_plic_interrupt(10);
 }
 
 void
@@ -58,4 +52,3 @@ stub(uint64_t code, uint64_t value)
 	kprintf("Got an interrupt/exception with code %d\n", code);
 	csr_write(sepc, csr_read(sepc)+4);
 }
-

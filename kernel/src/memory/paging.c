@@ -25,9 +25,10 @@ extern volatile void __kernel_start;
 extern volatile void __kernel_end;
 extern volatile void __heap_start;
 extern volatile void __placement_addr;
+extern volatile void __plic;
 
 static pte_t *placement;
-static bool enabled;
+static bool enabled = FALSE;
 
 pt_t *root_table;
 pt_t *current_table;
@@ -181,11 +182,10 @@ switch_table(pt_t *table)
 	if(table == 0)
 		return;
 
-	csr_clear(satp, (uint64_t) 8 << 60);
-	__asm__("sfence.vma");
 	current_table = table;
 	csr_set(satp, (uint64_t) table >> 12);
 	csr_read_set(satp, (uint64_t) 8 << 60);
+	__asm__("sfence.vma");
 }
 
 void
@@ -201,13 +201,15 @@ init_paging()
 	current_table = root_table;
 
 	placement = find(root_table, (uint64_t) &__placement_addr, TRUE);
+	uint64_t *obj = (uint64_t *) &__placement_addr;
+	(void) obj;
 
 	map_range((uint64_t) &__heap_start, HEAP_START_SIZE, PTE_W | PTE_R);
 	map_range_at((uint64_t) placement, (uint64_t) placement, PAGE_SIZE, PTE_W | PTE_R);
 	map_range_at((uint64_t) &__kernel_start, (uint64_t) &__kernel_start,  (uint64_t ) &__kernel_end - (uint64_t) &__kernel_start, PTE_W | PTE_R | PTE_X);
 	map_range_at(MMIO_START, MMIO_START, MMIO_COUNT * MMIO_STEP, PTE_W | PTE_R);
-	map_range_at((uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
 
+	map_range_at((uint64_t) &__uart, (uint64_t) &__uart, 0x100, PTE_W | PTE_R);
 	switch_table(root_table);
 	enabled = TRUE;	
 

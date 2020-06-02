@@ -7,6 +7,7 @@
 
 #include "stdbool.h"
 
+static uint64_t packet;
 
 // https://docs.oasis-open.org/virtio/virtio/v1.0/cs04/virtio-v1.0-cs04.pdf
 
@@ -36,6 +37,17 @@ set_queues(virtio_dev_t *dev)
 }
 
 void
+network()
+{
+	for(;;) {
+		if(packet) {
+			kprintf("Packet!");
+			for(;;);
+		}
+	}
+}
+
+void
 setup_network(virtio_dev_t *dev)
 {
 	log("Setting up a network card.\n");
@@ -55,4 +67,8 @@ setup_network(virtio_dev_t *dev)
 	virtio_net_config conf = read_virtio_field(virtio_net_config, dev, Config);
 	kprintf("MAC: ");
 	print_mac(conf.mac);
+
+	notify(10, &packet);
+	
+	start_kernel_process(network);
 }

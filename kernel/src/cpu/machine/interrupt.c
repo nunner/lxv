@@ -4,12 +4,14 @@
 
 #include "cpu/asm.h"
 #include "cpu/common.h"
+#include "cpu/machine/plic.h"
 #include "driver/timer.h"
 #include "scheduler/schedule.h"
 #include "stdint.h"
 
 #define TIMER 		7
 #define SYSCALL 	9
+#define PLIC		11
 
 extern process_t *current_process_phys;
 extern process_t *init;
@@ -19,6 +21,14 @@ uint64_t machine_stack_pos = (uint64_t) &__machine_stack;
 
 static void (*interrupts[32])(uint64_t value);
 static void (*exceptions[32])(uint64_t value);
+
+void
+jump_to_s_mode(uint64_t func)
+{
+	csr_write(sscratch, csr_read(mepc));
+	csr_write(mepc, func);
+	__asm__("mv %0, sp" : "=r" (machine_stack_pos));
+}
 
 void 
 machine_stub(uint64_t val)
@@ -72,6 +82,7 @@ setup_machine_interrupts()
 {
 	// Iinitialize your exceptions/interrupts here.
 	REGISTER_INTERRUPT(TIMER, handle_timer);
+	REGISTER_INTERRUPT(PLIC, handle_plic);
 	REGISTER_EXCEPTION(SYSCALL, handle_syscall);
 }
 

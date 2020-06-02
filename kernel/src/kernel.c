@@ -28,7 +28,7 @@ main()
 
 	start_kernel_process(clean_proc);
 
-	for(;;) ;
+	for(;;);
 }
 
 void
