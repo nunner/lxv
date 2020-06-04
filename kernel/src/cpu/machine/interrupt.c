@@ -78,19 +78,12 @@ setup_machine_interrupts()
 	REGISTER_EXCEPTION(SYSCALL, handle_syscall);
 }
 
-void
-oida()
-{
-}
-
 void 
 handle_machine_trap() 
 {
 	uint64_t interrupt  = csr_read(mcause) & INTERRUPT;
 	uint64_t code       = csr_read(mcause) & CODE;
 	uint64_t val        = csr_read(mtval);
-
-	if(code > 10) oida();
 
 	switch(code) {
 		case SYSCALL:

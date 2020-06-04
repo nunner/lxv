@@ -30,9 +30,7 @@ main()
 
 	start_kernel_process(clean_proc);
 
-	int i = 0;
-
-	for(;;) kprintf("Kernel %d\n", i++);
+	for(;;) __asm__("wfi");
 }
 
 void

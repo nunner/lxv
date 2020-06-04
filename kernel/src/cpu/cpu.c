@@ -53,7 +53,7 @@ setup_cpu()
 
 	init_plic();
 
-	//register_plic_interrupt(0x08);
+	register_plic_interrupt(0x08);
 	register_plic_interrupt(0x0a);
 
 	set_limit(get_time() + FREQUENCY);

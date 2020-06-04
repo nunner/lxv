@@ -23,7 +23,6 @@ setup_uart()
 
 	// Set transmission length to 8 bits
 	control[3] = 0b11;
-	
 
 	// Enable FIFO mode
 	control[2] = 0b1;

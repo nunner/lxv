@@ -25,7 +25,7 @@ notify(uint64_t plic, uint64_t *var)
 	if(plic > 32)
 		return;
 
-	notifications[plic] = (uint64_t *) virt_to_phys((uint64_t) var);
+	notifications[plic] = (void *) virt_to_phys((uint64_t) var);
 }
 
 
@@ -47,8 +47,9 @@ handle_plic()
 	uint32_t id;
 
 	while((id = *claim) != 0) {
-		if(notifications[id] != 0)
-			*notifications[id] = TRUE;
+		if(notifications[id] != 0) {
+			*notifications[id] = TRUE;	
+		}
 		*claim = id;
 	}
 }

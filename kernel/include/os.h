@@ -31,7 +31,7 @@ void
 kprintf(char *s, ...);
 
 void
-notify(uint64_t plic, uint64_t *var);
+notify(uint64_t plic, uint64_t *ptr);
 
 void
 panic(char *s);

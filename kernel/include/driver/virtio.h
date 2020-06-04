@@ -44,5 +44,9 @@ typedef void (*dev_setup_t)(virtio_dev_t *);
 #define set_virtio_field_bit(bit, type, dev, field) write_virtio_field(read_virtio_field(type, dev, field) | bit, type, dev, field);
 #define FEATURE(name, id) name = id,
 
+#define _DEV_MASK 0xF000
+#define _DEV_ID(dev) (dev & _DEV_MASK) / 0x1000
+#define DEV_ID(dev) (_DEV_ID((uint64_t) dev))
+
 void
 scan_virtio();

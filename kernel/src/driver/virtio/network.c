@@ -39,9 +39,10 @@ set_queues(virtio_dev_t *dev)
 void
 network()
 {
-	static int i = 0; 
 	for(;;) {
-		kprintf("Nothing %d\n", i++);
+		if(packet) {
+			packet = FALSE;
+		}
 	}
 }
 
@@ -53,6 +54,7 @@ setup_network(virtio_dev_t *dev)
 	write_virtio_field(0, 				uint32_t, dev, Status);
 	set_virtio_field_bit(ACKNOWLEDGE, 	uint32_t, dev, Status);
 	set_virtio_field_bit(DRIVER, 		uint32_t, dev, Status);
+	int id = DEV_ID(dev);	
 
 	uint32_t features = read_virtio_field(uint32_t, dev, HostFeatures);
 	logf("Features: %d\n", features);
@@ -66,7 +68,7 @@ setup_network(virtio_dev_t *dev)
 	kprintf("MAC: ");
 	print_mac(conf.mac);
 
-	notify(10, &packet);
+	notify(id, &packet);
 	
-	//start_kernel_process(network);
+	start_kernel_process(network);
 }
