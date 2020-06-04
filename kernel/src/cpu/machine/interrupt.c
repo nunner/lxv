@@ -56,7 +56,7 @@ handle_syscall(uint64_t num)
 	switch(num) {
 		case 0: 
 				current_process_phys->state = STOPPED;	
-				// This is supposed to fall through.
+		        /* fall through */
 		case 1: {
 					schedule();
 					frame = (frame_t *) csr_read(mscratch);
