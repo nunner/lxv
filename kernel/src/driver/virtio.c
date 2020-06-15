@@ -72,7 +72,7 @@ scan_virtio()
 			logf("Bus %d: \t%s\n", MMIO_COUNT - i, types[read_virtio_field(uint32_t, dev, DeviceID)]);
 
 			if(read_virtio_field(uint32_t, dev, DeviceID) != 0)
-				devices[MMIO_COUNT - 1 - i] = dev;
+				devices[i] = dev;
 		}
 	}
 

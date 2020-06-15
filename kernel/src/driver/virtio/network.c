@@ -2,6 +2,7 @@
 #include "driver/virtio/network.h"
 
 #include "net/util.h"
+#include "memory/palloc.h"
 
 #include "os.h"
 
@@ -14,7 +15,12 @@ static uint64_t packet;
 void
 setup_features(virtio_dev_t *dev)
 {
-	set_virtio_field_bit(VIRTIO_NET_F_MAC, uint32_t, dev, GuestFeaturesSel);
+	set_virtio_field_bit(VIRTIO_NET_F_MAC, uint32_t, dev, GuestFeatures);
+
+	set_virtio_field_bit(FEATURES_OK, uint32_t, dev, Status);
+
+	if(!(read_virtio_field(uint32_t, dev, Status) & FEATURES_OK))
+		panic("Couldn't set up device.");
 }
 
 // Returns whether the queue is in use or not.
@@ -30,10 +36,16 @@ sel_queue(virtio_dev_t *dev, int num)
 }
 
 void
-set_queues(virtio_dev_t *dev)
+setup_queues(virtio_dev_t *dev)
 {
-	if(sel_queue(dev, 0))
-			panic("Error while setting up the network device.");
+	int i = 0; 
+	while(sel_queue(dev, i) != 0) {
+		uint64_t addr = find_free();	
+		alloc_frame(addr);
+
+
+		
+	}
 }
 
 void
@@ -42,6 +54,7 @@ network()
 	for(;;) {
 		if(packet) {
 			packet = FALSE;
+			log("Packet!");
 		}
 	}
 }
@@ -60,7 +73,7 @@ setup_network(virtio_dev_t *dev)
 	logf("Features: %d\n", features);
 
 	setup_features(dev);
-	set_queues(dev);
+	setup_queues(dev);
 
 	set_virtio_field_bit(DRIVER_OK, uint32_t, dev, Status);
 

@@ -138,11 +138,15 @@ map_range(uint64_t vaddr, uint64_t size, uint64_t flags)
 	vaddr &= ~(0x1FFF);
 	for(size_t i = 0; i < size; i += PAGE_SIZE)
 	{
-
 		uint64_t pos = vaddr + i;
 		uint64_t ptr = find_free();
 		map_range_at(pos, ptr, PAGE_SIZE, flags);
 	}
+}
+
+void *
+get_page()
+{
 }
 
 // Translate a virtual address to a physical one
