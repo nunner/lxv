@@ -47,3 +47,13 @@ find_free()
 	}
 	return -1;
 }
+
+void *
+get_page()
+{
+	uint64_t page = find_free();
+	alloc_frame(page);	
+	map_range_at(page, page, PAGE_SIZE, PTE_W | PTE_R);
+	return (void *) page;
+}
+

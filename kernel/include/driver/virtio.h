@@ -4,6 +4,17 @@
 
 #define MAGIC_VALUE 0x74726976
 
+#define read_virtio_field(type, dev, field) *((type *) ((uint64_t) dev + field))
+#define write_virtio_field(value, type, dev, field) *((type *) ((uint64_t) dev + field)) = value
+#define set_virtio_field_bit(bit, type, dev, field) write_virtio_field(read_virtio_field(type, dev, field) | bit, type, dev, field);
+#define FEATURE(name, id) name = id,
+
+#define _DEV_MASK 0xF000
+#define _DEV_ID(dev) (dev & _DEV_MASK) / 0x1000
+#define DEV_ID(dev) (_DEV_ID((uint64_t) dev))
+
+#define _QUEUE_NUM (1 << 6)
+
 typedef void virtio_dev_t;
 
 typedef enum {
@@ -37,16 +48,34 @@ typedef enum {
 	FAILED				= 128,
 } driver_status;
 
+typedef struct {
+	struct {
+		uint64_t Address; 
+		uint32_t Length;  
+		uint16_t Flags;   
+
+		uint16_t Next;    
+	} Buffers [_QUEUE_NUM];
+
+	struct {
+		uint16_t Flags;             
+		uint16_t Index;             
+		uint16_t Ring[_QUEUE_NUM];  
+		uint16_t EventIndex;        
+	} Available;
+
+	struct {
+		uint16_t Flags;            
+		uint16_t Index;            
+		struct {
+			uint32_t Index;  
+			uint32_t Length; 
+		} Ring;
+		uint16_t AvailEvent;
+	} Ring [_QUEUE_NUM];
+} VirtQueue;
+
 typedef void (*dev_setup_t)(virtio_dev_t *);
-
-#define read_virtio_field(type, dev, field) *((type *) ((uint64_t) dev + field))
-#define write_virtio_field(value, type, dev, field) *((type *) ((uint64_t) dev + field)) = value
-#define set_virtio_field_bit(bit, type, dev, field) write_virtio_field(read_virtio_field(type, dev, field) | bit, type, dev, field);
-#define FEATURE(name, id) name = id,
-
-#define _DEV_MASK 0xF000
-#define _DEV_ID(dev) (dev & _DEV_MASK) / 0x1000
-#define DEV_ID(dev) (_DEV_ID((uint64_t) dev))
 
 void
 scan_virtio();

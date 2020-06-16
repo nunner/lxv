@@ -14,5 +14,11 @@ typedef struct {
 	mac_t mac;
 } virtio_net_config;
 
+// TODO: multiple nic support
+typedef struct {
+	virtio_dev_t *dev;
+	VirtQueue *queues[2];
+} net_dev_t;
+
 void
 setup_network(virtio_dev_t *dev);

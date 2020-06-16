@@ -144,10 +144,6 @@ map_range(uint64_t vaddr, uint64_t size, uint64_t flags)
 	}
 }
 
-void *
-get_page()
-{
-}
 
 // Translate a virtual address to a physical one
 uint64_t

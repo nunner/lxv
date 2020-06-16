@@ -47,3 +47,4 @@ virt_to_phys(uint64_t addr);
 
 uint64_t
 m_virt_to_phys(uint64_t addr);
+
