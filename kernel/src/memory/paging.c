@@ -151,7 +151,7 @@ virt_to_phys(uint64_t addr)
 {
 	pte_t *page = find(current_table, addr, FALSE);
 	if(page != 0)
-		return (PA(page)) + (addr & 0x1FFF);
+		return (PA(page)) + (addr & 0xFFF);
 	else
 		return 0;
 }
@@ -168,7 +168,7 @@ m_virt_to_phys(uint64_t addr)
 	}
 
 	if(page != 0)
-		return (PA(page)) + (addr & 0x1FFF);
+		return (PA(page)) + (addr & 0xFFF);
 	else
 		return 0;
 }

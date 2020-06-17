@@ -48,6 +48,12 @@ typedef enum {
 	FAILED				= 128,
 } driver_status;
 
+typedef enum {
+	F_NEXT 		= 1,
+	F_WRITE 	= 2,
+	F_INDIRECT 	= 4,
+} desc_flag;
+
 typedef struct {
 	struct {
 		uint64_t Address; 

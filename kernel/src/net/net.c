@@ -15,8 +15,8 @@ network()
 {
 	for(;;) {
 		if(packet) {
-			packet = FALSE;
 			log("Packet!");
+			packet = FALSE;
 		}
 	}
 }
