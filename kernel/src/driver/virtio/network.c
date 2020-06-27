@@ -26,38 +26,7 @@ setup_features(virtio_dev_t *dev)
 		panic("Couldn't set up device: queue isn't ready");
 }
 
-void
-add_buffer(virtio_dev_t *dev, VirtQueue *queue)
-{
-	for(size_t i = 0; i < _QUEUE_NUM; i++) {
-		if(queue->Buffers[i].Length == 0) {
-			uint64_t buffer = (uint64_t) malloc(1500);	
-			queue->Buffers[i].Address = virt_to_phys(buffer);
-			queue->Buffers[i].Address = buffer;
-
-			int index = queue->Available.Index % _QUEUE_NUM;
-
-			queue->Available.Ring[index] = i;
-			queue->Available.Index++;	
-
-			write_virtio_field(index, uint32_t, dev, QueueNotify);
-			break;
-		}
-	}
-}
-
 // Returns whether the queue is in use or not.
-uint64_t
-sel_queue(virtio_dev_t *dev, int num)
-{
-	write_virtio_field(num, uint32_t, dev, QueueSel);
-
-	if(!read_virtio_field(uint32_t, dev, QueueNumMax))
-		panic("Queue is not ready.");
-
-	return read_virtio_field(uint32_t, dev, QueueNumMax);
-}
-
 void
 setup_queues(virtio_dev_t *dev)
 {

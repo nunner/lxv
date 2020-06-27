@@ -3,7 +3,7 @@
 
 #include "os.h"
 #include "memory/heap.h"
-
+#include "memory/paging.h"
 
 static char *types[] = {
 	"None", // "Reserved"
@@ -82,3 +82,43 @@ scan_virtio()
 			setup_device(devices[i]);
 	}
 }
+
+uint64_t
+sel_queue(virtio_dev_t *dev, uint64_t idx)
+{
+	write_virtio_field(idx, uint32_t, dev, QueueSel);
+
+	if(!read_virtio_field(uint32_t, dev, QueueNumMax))
+		panic("Queue is not ready.");
+
+	return read_virtio_field(uint32_t, dev, QueueNumMax);
+}
+
+
+VirtQueue *
+get_queue(virtio_dev_t *dev, uint64_t idx)
+{
+	sel_queue(dev, idx);
+	return (VirtQueue *) read_virtio_field(uint64_t, dev, QueuePFN);
+}
+
+void
+add_buffer(virtio_dev_t *dev, VirtQueue *queue)
+{
+	for(size_t i = 0; i < _QUEUE_NUM; i++) {
+		if(queue->Buffers[i].Length == 0) {
+			uint64_t buffer = (uint64_t) malloc(1500);	
+			queue->Buffers[i].Address = virt_to_phys(buffer);
+			queue->Buffers[i].Address = buffer;
+
+			int index = queue->Available.Index % _QUEUE_NUM;
+
+			queue->Available.Ring[index] = i;
+			queue->Available.Index++;	
+
+			write_virtio_field(index, uint32_t, dev, QueueNotify);
+			break;
+		}
+	}
+}
+

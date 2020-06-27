@@ -85,3 +85,12 @@ typedef void (*dev_setup_t)(virtio_dev_t *);
 
 void
 scan_virtio();
+
+uint64_t
+sel_queue(virtio_dev_t *dev, uint64_t idx);
+
+VirtQueue *
+get_queue(virtio_dev_t *dev, uint64_t idx);
+
+void
+add_buffer(virtio_dev_t *dev, VirtQueue *queue);
